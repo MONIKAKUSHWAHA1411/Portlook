@@ -6,3 +6,7 @@ node_modules/
 .DS_Store
 dist/
 out/
+
+# typescript / next build artifacts
+*.tsbuildinfo
+next-env.d.ts

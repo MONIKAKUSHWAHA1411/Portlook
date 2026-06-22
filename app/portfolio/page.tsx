@@ -2,37 +2,69 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PortfolioData } from "@/lib/types";
-import { ParticleCanvas } from "@/components/portfolio/ParticleCanvas";
-import { Navigation } from "@/components/portfolio/Navigation";
-import { Hero } from "@/components/portfolio/Hero";
-import { About } from "@/components/portfolio/About";
-import { Skills } from "@/components/portfolio/Skills";
-import { Projects } from "@/components/portfolio/Projects";
-import { Numbers } from "@/components/portfolio/Numbers";
-import { Experience } from "@/components/portfolio/Experience";
-import { Education } from "@/components/portfolio/Education";
-import { Certifications } from "@/components/portfolio/Certifications";
-import { Contact } from "@/components/portfolio/Contact";
+import { getTemplate, type TemplateId } from "@/lib/templates";
+import { TemplateRenderer } from "@/components/templates/TemplateRenderer";
+import { TemplateSwitcher } from "@/components/templates/TemplateSwitcher";
+
+function sanitize(raw: Record<string, unknown>): PortfolioData {
+  const skills = (raw.skills as Record<string, string[]> | null) ?? {};
+  return {
+    name:         (raw.name as string)         ?? "Your Name",
+    title:        (raw.title as string)        ?? "Professional",
+    email:        (raw.email as string)        ?? null,
+    phone:        (raw.phone as string)        ?? null,
+    location:     (raw.location as string)     ?? null,
+    linkedin:     (raw.linkedin as string)     ?? null,
+    github:       (raw.github as string)       ?? null,
+    website:      (raw.website as string)      ?? null,
+    summary:      (raw.summary as string)      ?? "",
+    role:         (raw.role as string)         ?? "other",
+    heroHeadline: (raw.heroHeadline as string) ?? "Building Things That Matter",
+    heroSubtitle: (raw.heroSubtitle as string) ?? "",
+    statusBadge:  (raw.statusBadge as string)  ?? "Open to New Roles",
+    topSkills:    Array.isArray(raw.topSkills)    ? raw.topSkills    : [],
+    philosophyCards: Array.isArray(raw.philosophyCards) ? raw.philosophyCards : [],
+    numbers:      Array.isArray(raw.numbers)      ? raw.numbers      : [],
+    skillCategories: Array.isArray(raw.skillCategories) ? raw.skillCategories : [],
+    skills: {
+      languages:  Array.isArray(skills.languages)  ? skills.languages  : [],
+      frameworks: Array.isArray(skills.frameworks) ? skills.frameworks : [],
+      aiml:       Array.isArray(skills.aiml)       ? skills.aiml       : [],
+      cloud:      Array.isArray(skills.cloud)      ? skills.cloud      : [],
+      databases:  Array.isArray(skills.databases)  ? skills.databases  : [],
+      tools:      Array.isArray(skills.tools)      ? skills.tools      : [],
+    },
+    experience:     Array.isArray(raw.experience)     ? raw.experience     : [],
+    education:      Array.isArray(raw.education)      ? raw.education      : [],
+    projects:       Array.isArray(raw.projects)       ? raw.projects       : [],
+    certifications: Array.isArray(raw.certifications) ? raw.certifications : [],
+  } as PortfolioData;
+}
 
 export default function PortfolioPage() {
   const router = useRouter();
   const [data, setData] = useState<PortfolioData | null>(null);
+  const [template, setTemplate] = useState<TemplateId>("spectrum");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("portfolioData");
-    if (!raw) {
-      router.replace("/");
-      return;
-    }
+    if (!raw) { router.replace("/"); return; }
     try {
-      setData(JSON.parse(raw));
+      setData(sanitize(JSON.parse(raw)));
+      setTemplate(getTemplate(sessionStorage.getItem("portfolioTemplate")));
     } catch {
       router.replace("/");
     } finally {
       setLoading(false);
     }
   }, [router]);
+
+  const choose = (id: TemplateId) => {
+    setTemplate(id);
+    sessionStorage.setItem("portfolioTemplate", id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (loading) {
     return (
@@ -48,21 +80,9 @@ export default function PortfolioPage() {
   if (!data) return null;
 
   return (
-    <main className="min-h-screen bg-[#0a0a1a] text-white overflow-x-hidden">
-      <ParticleCanvas />
-      <Navigation data={data} />
-
-      <div className="relative z-10">
-        <Hero data={data} />
-        <About data={data} />
-        <Skills skills={data.skills} />
-        <Projects projects={data.projects} />
-        <Numbers data={data} />
-        <Experience experience={data.experience} />
-        <Education education={data.education} />
-        <Certifications certifications={data.certifications} />
-        <Contact data={data} />
-      </div>
+    <main className="min-h-screen">
+      <TemplateRenderer template={template} data={data} />
+      <TemplateSwitcher current={template} onChange={choose} />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { PortfolioData } from "@/lib/types";
 
 const ITEMS = [
   { label: "STORY", href: "#about" },
@@ -11,10 +12,11 @@ const ITEMS = [
   { label: "CONTACT", href: "#contact" },
 ];
 
-export function Navigation({ name }: { name: string }) {
+export function Navigation({ data }: { data: PortfolioData }) {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("");
-  const initials = name.split(" ").slice(0, 2).map(w => w[0]).join("").toLowerCase();
+  const name = data?.name ?? "Portfolio";
+  const initials = name.split(" ").slice(0, 2).map((w: string) => w[0] ?? "").join("").toLowerCase() || "p";
 
   useEffect(() => {
     const onScroll = () => {

@@ -2,17 +2,21 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut } from "lucide-react";
+import { TEMPLATES, DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
 
 type State = "idle" | "dragging" | "selected" | "parsing" | "error";
 
 export default function HomePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const inputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<State>("idle");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [template, setTemplate] = useState<TemplateId>(DEFAULT_TEMPLATE);
 
   const handleFile = (f: File) => {
     const ok = f.name.endsWith(".pdf") || f.name.endsWith(".docx") || f.name.endsWith(".doc");
@@ -36,7 +40,8 @@ export default function HomePage() {
       const res = await fetch("/api/parse-cv", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error || "Parsing failed");
-      sessionStorage.setItem("portfolio_data", JSON.stringify(json.data));
+      sessionStorage.setItem("portfolioData", JSON.stringify(json.data));
+      sessionStorage.setItem("portfolioTemplate", template);
       router.push("/portfolio");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -46,6 +51,19 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      {/* Signed-in user */}
+      {session?.user && (
+        <div className="absolute top-5 right-5 z-20 flex items-center gap-3">
+          <span className="text-xs text-zinc-500 hidden sm:block">{session.user.email}</span>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-zinc-400 border border-white/8 bg-white/[0.02] hover:text-white hover:border-white/20 transition-colors"
+          >
+            <LogOut size={12} /> Sign out
+          </button>
+        </div>
+      )}
+
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
@@ -136,11 +154,46 @@ export default function HomePage() {
 
                 <AnimatePresence>
                   {state === "selected" && (
-                    <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                      onClick={generate}
-                      className="mt-4 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all shadow-xl shadow-purple-500/20">
-                      <Sparkles size={18} /> Generate My Portfolio <ArrowRight size={18} />
-                    </motion.button>
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-5">
+                      {/* Template picker */}
+                      <p className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase mb-3">Choose a style</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {TEMPLATES.map((t) => {
+                          const active = template === t.id;
+                          return (
+                            <button
+                              key={t.id}
+                              onClick={() => setTemplate(t.id)}
+                              title={t.blurb}
+                              className={`relative text-left rounded-xl p-3 border transition-all ${
+                                active
+                                  ? "border-purple-500/60 bg-purple-500/10"
+                                  : "border-white/8 bg-white/[0.02] hover:border-white/20"
+                              }`}
+                            >
+                              {active && (
+                                <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
+                                  <Check size={11} className="text-white" />
+                                </span>
+                              )}
+                              <div className="flex gap-1 mb-2">
+                                {t.swatches.map((c, i) => (
+                                  <span key={i} className="w-4 h-4 rounded-full border border-white/10" style={{ background: c }} />
+                                ))}
+                              </div>
+                              <p className="text-sm font-semibold text-white">{t.name}</p>
+                              <p className="text-[10px] text-zinc-500 leading-tight mt-0.5 line-clamp-2">{t.blurb}</p>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        onClick={generate}
+                        className="mt-4 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all shadow-xl shadow-purple-500/20">
+                        <Sparkles size={18} /> Generate My Portfolio <ArrowRight size={18} />
+                      </button>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </motion.div>

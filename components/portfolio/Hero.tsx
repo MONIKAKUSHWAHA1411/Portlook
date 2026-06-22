@@ -41,7 +41,7 @@ function Typewriter({ items }: { items: string[] }) {
 }
 
 function TechCard({ skills }: { skills: PortfolioData["skills"] }) {
-  const all = [...skills.languages, ...skills.frameworks, ...skills.aiml, ...skills.cloud].slice(0, 12);
+  const all = [...(skills.languages ?? []), ...(skills.frameworks ?? []), ...(skills.aiml ?? []), ...(skills.cloud ?? [])].slice(0, 12);
   const total = Object.values(skills).flat().length;
   return (
     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.8 }}
@@ -64,13 +64,14 @@ function TechCard({ skills }: { skills: PortfolioData["skills"] }) {
 }
 
 export function Hero({ data }: { data: PortfolioData }) {
-  const twItems = [...data.projects.map(p => p.name), ...data.skills.aiml.slice(0, 3)].filter(Boolean);
+  const twItems = [...(data.projects ?? []).map(p => p.name), ...(data.skills?.aiml ?? []).slice(0, 3)].filter(Boolean);
   const stats = [
-    { v: `${data.experience.reduce((a, e) => a + e.description.length, 0)}+`, l: "Achievements" },
-    { v: `${data.projects.length}+`, l: "Projects Built" },
-    { v: `${data.skills.aiml.length}+`, l: "AI Skills" },
-    { v: `${Math.max(data.experience.length * 2, 1)}+`, l: "Years Exp" },
+    { v: `${(data.experience ?? []).reduce((a, e) => a + (e.description?.length ?? 0), 0)}+`, l: "Achievements" },
+    { v: `${(data.projects ?? []).length}+`, l: "Projects Built" },
+    { v: `${Object.values(data.skills ?? {}).flat().length}+`, l: "Technologies" },
+    { v: `${Math.max((data.experience ?? []).length * 2, 1)}+`, l: "Years Exp" },
   ];
+  const badge = data.statusBadge ?? "Open to New Roles";
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center pt-20 pb-16 px-6">
@@ -79,16 +80,16 @@ export function Hero({ data }: { data: PortfolioData }) {
           <motion.div variants={fadeUp}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-purple-500/10 text-purple-300 border border-purple-500/20">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Open to Senior AI Engineer Roles
+              {badge}
             </span>
           </motion.div>
 
           <motion.div variants={fadeUp}>
             <h1 className="text-6xl md:text-7xl font-black leading-[1.05] tracking-tight">
-              {data.name.split(" ").map((word, i) => (
+              {(data.name ?? "").split(" ").map((word, i) => (
                 <span key={i} className="text-white block">{word}</span>
               ))}
-              <span className="gradient-text block mt-1">{data.title}</span>
+              <span className="gradient-text block mt-1">{data.title ?? ""}</span>
             </h1>
           </motion.div>
 
@@ -133,7 +134,7 @@ export function Hero({ data }: { data: PortfolioData }) {
             <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-600 to-cyan-500 p-[3px]">
               <div className="w-full h-full rounded-full bg-[#0d0d1f] flex items-center justify-center">
                 <span className="text-5xl font-black gradient-text select-none">
-                  {data.name.split(" ").slice(0, 2).map(w => w[0]).join("")}
+                  {(data.name ?? "").split(" ").slice(0, 2).map((w: string) => w[0] ?? "").join("") || "?"}
                 </span>
               </div>
             </div>
