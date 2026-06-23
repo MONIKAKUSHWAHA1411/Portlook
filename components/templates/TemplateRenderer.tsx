@@ -12,6 +12,8 @@ import { DeckTemplate } from "./deck";
 import { CometTemplate } from "./comet";
 import { QuillTemplate } from "./quill";
 import { AnalystTemplate } from "./analyst";
+import { PulseTemplate } from "./pulse";
+import { EdgeTemplate } from "./edge";
 
 export function TemplateRenderer({
   template,
@@ -39,6 +41,10 @@ export function TemplateRenderer({
       return <QuillTemplate data={data} />;
     case "analyst":
       return <AnalystTemplate data={data} />;
+    case "pulse":
+      return <PulseTemplate data={data} />;
+    case "edge":
+      return <EdgeTemplate data={data} />;
     case "spectrum":
     default:
       return <SpectrumTemplate data={data} />;

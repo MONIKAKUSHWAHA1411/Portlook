@@ -8,7 +8,9 @@ export type TemplateId =
   | "deck"
   | "comet"
   | "quill"
-  | "analyst";
+  | "analyst"
+  | "pulse"
+  | "edge";
 
 export interface TemplateMeta {
   id: TemplateId;
@@ -100,6 +102,22 @@ export const TEMPLATES: TemplateMeta[] = [
     theme: "light",
     swatches: ["#ffffff", "#2563eb", "#64748b"],
     inspiredBy: "artificialanalysis.ai",
+  },
+  {
+    id: "pulse",
+    name: "Pulse",
+    blurb: "Animated aurora, count-up stats, motion-rich.",
+    theme: "dark",
+    swatches: ["#0c0a0d", "#f0386b", "#8b5cf6"],
+    inspiredBy: "braintrust.dev",
+  },
+  {
+    id: "edge",
+    name: "Edge",
+    blurb: "Stark black & white, conic glow, deploy cards.",
+    theme: "dark",
+    swatches: ["#000000", "#ffffff", "#007CF0"],
+    inspiredBy: "vercel.com",
   },
 ];
 

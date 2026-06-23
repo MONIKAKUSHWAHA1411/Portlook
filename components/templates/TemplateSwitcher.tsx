@@ -6,6 +6,7 @@ import { signOut } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Palette, Check, FilePlus2, LogOut, X, Share2, Copy, ExternalLink, Loader2 } from "lucide-react";
 import { TEMPLATES, type TemplateId } from "@/lib/templates";
+import { TemplateThumbnail } from "./TemplateThumbnail";
 import type { PortfolioData } from "@/lib/types";
 
 /**
@@ -119,11 +120,7 @@ export function TemplateSwitcher({
                       sel ? "bg-white/10" : "hover:bg-white/5"
                     }`}
                   >
-                    <div className="flex gap-1 shrink-0">
-                      {t.swatches.map((c, i) => (
-                        <span key={i} className="w-3.5 h-3.5 rounded-full border border-white/15" style={{ background: c }} />
-                      ))}
-                    </div>
+                    <TemplateThumbnail id={t.id} className="w-14 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-white leading-tight">{t.name}</p>
                       <p className="text-[10px] text-zinc-500 truncate">{t.inspiredBy}</p>

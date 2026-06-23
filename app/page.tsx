@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut, LayoutGrid } from "lucide-react";
 import { TEMPLATES, DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
 import { SAMPLE_PORTFOLIO } from "@/lib/sampleData";
+import { TemplateThumbnail } from "@/components/templates/TemplateThumbnail";
 
 type State = "idle" | "dragging" | "selected" | "parsing" | "error";
 
@@ -190,13 +191,9 @@ export default function HomePage() {
                                   <Check size={11} className="text-white" />
                                 </span>
                               )}
-                              <div className="flex gap-1 mb-2">
-                                {t.swatches.map((c, i) => (
-                                  <span key={i} className="w-4 h-4 rounded-full border border-white/10" style={{ background: c }} />
-                                ))}
-                              </div>
+                              <TemplateThumbnail id={t.id} className="mb-2" />
                               <p className="text-sm font-semibold text-white">{t.name}</p>
-                              <p className="text-[10px] text-zinc-500 leading-tight mt-0.5 line-clamp-2">{t.blurb}</p>
+                              <p className="text-[10px] text-zinc-500 leading-tight mt-0.5 line-clamp-1">{t.blurb}</p>
                             </button>
                           );
                         })}
