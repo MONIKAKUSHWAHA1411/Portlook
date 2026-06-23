@@ -7,6 +7,6 @@ export const { auth: middleware } = NextAuth(authConfig);
 export const config = {
   // Gate everything except Next internals, auth API routes, and static assets.
   matcher: [
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!api/auth|p/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

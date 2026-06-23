@@ -82,7 +82,7 @@ export default function PortfolioPage() {
   return (
     <main className="min-h-screen">
       <TemplateRenderer template={template} data={data} />
-      <TemplateSwitcher current={template} onChange={choose} />
+      <TemplateSwitcher current={template} onChange={choose} data={data} />
     </main>
   );
 }
