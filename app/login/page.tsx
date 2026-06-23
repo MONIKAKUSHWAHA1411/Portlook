@@ -1,26 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { signIn, getProviders } from "next-auth/react";
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
 
-const isDev = process.env.NODE_ENV !== "production";
+type Providers = Record<string, { id: string; name: string }> | null;
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState<"google" | "dev" | null>(null);
+  const [providers, setProviders] = useState<Providers>(null);
+  const [loading, setLoading] = useState<"google" | "guest" | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    getProviders().then((p) => setProviders((p as Providers) ?? {}));
+  }, []);
+
+  const hasGoogle = !!providers?.google;
+  const hasGuest = !!providers?.guest;
 
   const google = () => {
     setLoading("google");
     signIn("google", { callbackUrl: "/" });
   };
 
-  const dev = (e: React.FormEvent) => {
+  const guest = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading("dev");
-    signIn("dev", { name, email, callbackUrl: "/" });
+    setLoading("guest");
+    signIn("guest", { name, email, callbackUrl: "/" });
   };
 
   return (
@@ -40,55 +48,67 @@ export default function LoginPage() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20 mb-5">
             <Sparkles size={12} /> CV → Portfolio
           </div>
-          <h1 className="text-3xl font-black text-white mb-2">Welcome back</h1>
+          <h1 className="text-3xl font-black text-white mb-2">Welcome</h1>
           <p className="text-zinc-400 text-sm">Sign in to build your portfolio.</p>
         </div>
 
         <div className="glass rounded-2xl p-6 flex flex-col gap-4">
-          <button
-            onClick={google}
-            disabled={loading !== null}
-            className="w-full py-3 rounded-xl bg-white text-zinc-900 font-semibold flex items-center justify-center gap-3 hover:bg-zinc-100 active:scale-[0.99] transition-all disabled:opacity-60"
-          >
-            {loading === "google" ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
-            Continue with Google
-          </button>
-
-          {isDev && (
+          {providers === null ? (
+            <div className="flex justify-center py-6">
+              <Loader2 size={20} className="animate-spin text-zinc-500" />
+            </div>
+          ) : (
             <>
-              <div className="flex items-center gap-3 text-zinc-600 text-xs">
-                <div className="h-px flex-1 bg-white/10" />
-                dev login
-                <div className="h-px flex-1 bg-white/10" />
-              </div>
-
-              <form onSubmit={dev} className="flex flex-col gap-3">
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Name (optional)"
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-white text-sm placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none transition-colors"
-                />
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email (optional)"
-                  type="email"
-                  className="w-full px-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-white text-sm placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none transition-colors"
-                />
+              {hasGoogle && (
                 <button
-                  type="submit"
+                  onClick={google}
                   disabled={loading !== null}
-                  className="w-full py-2.5 rounded-lg border border-white/10 text-zinc-300 text-sm font-medium flex items-center justify-center gap-2 hover:bg-white/5 hover:text-white transition-colors disabled:opacity-60"
+                  className="w-full py-3 rounded-xl bg-white text-zinc-900 font-semibold flex items-center justify-center gap-3 hover:bg-zinc-100 active:scale-[0.99] transition-all disabled:opacity-60"
                 >
-                  {loading === "dev" ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
-                  Continue without Google
+                  {loading === "google" ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
+                  Continue with Google
                 </button>
-              </form>
+              )}
+
+              {hasGoogle && hasGuest && (
+                <div className="flex items-center gap-3 text-zinc-600 text-xs">
+                  <div className="h-px flex-1 bg-white/10" />
+                  or
+                  <div className="h-px flex-1 bg-white/10" />
+                </div>
+              )}
+
+              {hasGuest && (
+                <form onSubmit={guest} className="flex flex-col gap-3">
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-white text-sm placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none transition-colors"
+                  />
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email (optional)"
+                    type="email"
+                    className="w-full px-4 py-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-white text-sm placeholder:text-zinc-600 focus:border-purple-500/50 focus:outline-none transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading !== null}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all disabled:opacity-60"
+                  >
+                    {loading === "guest" ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
+                    Continue
+                  </button>
+                </form>
+              )}
+
+              {!hasGoogle && !hasGuest && (
+                <p className="text-center text-sm text-red-400 py-4">
+                  No sign-in method configured. Set Google OAuth env vars to enable login.
+                </p>
+              )}
             </>
           )}
         </div>

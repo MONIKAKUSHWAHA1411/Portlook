@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut } from "lucide-react";
 import { TEMPLATES, DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
+import { SAMPLE_PORTFOLIO } from "@/lib/sampleData";
 
 type State = "idle" | "dragging" | "selected" | "parsing" | "error";
 
@@ -47,6 +48,12 @@ export default function HomePage() {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setState("error");
     }
+  };
+
+  const previewSample = () => {
+    sessionStorage.setItem("portfolioData", JSON.stringify(SAMPLE_PORTFOLIO));
+    sessionStorage.setItem("portfolioTemplate", template);
+    router.push("/portfolio");
   };
 
   return (
@@ -200,6 +207,16 @@ export default function HomePage() {
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* Sample-data preview (no upload, no API) */}
+        {state !== "parsing" && (
+          <div className="text-center mt-5">
+            <button onClick={previewSample} className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+              or <span className="text-purple-400 underline underline-offset-2">preview with sample data</span>
+              <span className="text-zinc-600"> — no upload, no API</span>
+            </button>
+          </div>
+        )}
 
         {/* Feature pills */}
         <motion.div className="flex flex-wrap justify-center gap-2 mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>

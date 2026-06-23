@@ -146,12 +146,15 @@ export async function POST(req: NextRequest) {
     if (!text.trim()) return NextResponse.json({ error: "Could not read text from file." }, { status: 400 });
 
     const completion = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile",
       temperature: 0.2,
-      max_tokens: 6000,
+      // Portfolio JSON output is ~1.8k tokens; keep this small so the whole
+      // request (input + reserved output) fits free-tier per-minute limits
+      // (e.g. llama-3.1-8b-instant = 6k TPM).
+      max_tokens: 3000,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: text.slice(0, 12000) },
+        { role: "user", content: text.slice(0, 8000) },
       ],
     });
 
