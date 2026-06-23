@@ -8,6 +8,10 @@ import { EmberTemplate } from "./ember";
 import { EditorialTemplate } from "./editorial";
 import { DevTemplate } from "./dev";
 import { InkTemplate } from "./ink";
+import { DeckTemplate } from "./deck";
+import { CometTemplate } from "./comet";
+import { QuillTemplate } from "./quill";
+import { AnalystTemplate } from "./analyst";
 
 export function TemplateRenderer({
   template,
@@ -27,6 +31,14 @@ export function TemplateRenderer({
       return <DevTemplate data={data} />;
     case "ink":
       return <InkTemplate data={data} />;
+    case "deck":
+      return <DeckTemplate data={data} />;
+    case "comet":
+      return <CometTemplate data={data} />;
+    case "quill":
+      return <QuillTemplate data={data} />;
+    case "analyst":
+      return <AnalystTemplate data={data} />;
     case "spectrum":
     default:
       return <SpectrumTemplate data={data} />;

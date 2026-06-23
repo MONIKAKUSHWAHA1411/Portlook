@@ -1,4 +1,14 @@
-export type TemplateId = "spectrum" | "halo" | "ember" | "editorial" | "dev" | "ink";
+export type TemplateId =
+  | "spectrum"
+  | "halo"
+  | "ember"
+  | "editorial"
+  | "dev"
+  | "ink"
+  | "deck"
+  | "comet"
+  | "quill"
+  | "analyst";
 
 export interface TemplateMeta {
   id: TemplateId;
@@ -58,6 +68,38 @@ export const TEMPLATES: TemplateMeta[] = [
     theme: "dark",
     swatches: ["#0a0a0a", "#ff3d1f", "#00e5c3"],
     inspiredBy: "MoodInk",
+  },
+  {
+    id: "deck",
+    name: "Deck",
+    blurb: "Bright D2C SaaS — rounded cards, dashboard hero.",
+    theme: "light",
+    swatches: ["#ffffff", "#2f6bff", "#0b1437"],
+    inspiredBy: "shopdeck.com",
+  },
+  {
+    id: "comet",
+    name: "Comet",
+    blurb: "Navy + teal enterprise, stats-forward grid.",
+    theme: "light",
+    swatches: ["#0b1e3b", "#06b6a4", "#ffffff"],
+    inspiredBy: "gocomet.com",
+  },
+  {
+    id: "quill",
+    name: "Quill",
+    blurb: "Warm cream with elegant serif headings.",
+    theme: "light",
+    swatches: ["#fdfcfa", "#7c3aed", "#1a1a1a"],
+    inspiredBy: "crackaiinterviews.co.in",
+  },
+  {
+    id: "analyst",
+    name: "Analyst",
+    blurb: "Data-journal — benchmark tables & charts.",
+    theme: "light",
+    swatches: ["#ffffff", "#2563eb", "#64748b"],
+    inspiredBy: "artificialanalysis.ai",
   },
 ];
 

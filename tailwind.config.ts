@@ -14,6 +14,8 @@ const config: Config = {
         "plex-mono": ["var(--font-plex-mono)", "ui-monospace", "monospace"],
         "dm-sans": ["var(--font-dm-sans)", "system-ui", "sans-serif"],
         "dm-mono": ["var(--font-dm-mono)", "ui-monospace", "monospace"],
+        serif: ["var(--font-instrument-serif)", "Georgia", "serif"],
+        jakarta: ["var(--font-jakarta)", "system-ui", "sans-serif"],
       },
       colors: {
         // Template accent palettes (see lib/templates.ts)
