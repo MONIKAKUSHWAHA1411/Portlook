@@ -14,7 +14,7 @@ function slugify(name: string): string {
   return s || "portfolio";
 }
 
-const randomSuffix = () => Math.random().toString(36).slice(2, 6);
+const randomSuffix = () => Math.random().toString(36).slice(2, 8);
 
 export async function POST(req: NextRequest) {
   if (!isSupabaseConfigured()) {
@@ -40,9 +40,10 @@ export async function POST(req: NextRequest) {
 
   const supabase = getSupabase();
   const base = slugify(String(data.name));
-  let slug = base;
+  // Always suffixed so links can't be guessed or enumerated; the readable base
+  // keeps them human-friendly. Regenerate the suffix on the rare collision.
+  let slug = `${base}-${randomSuffix()}`;
 
-  // Try the clean slug first; add a short suffix on collision.
   for (let attempt = 0; attempt < 6; attempt++) {
     const { data: inserted, error } = await supabase
       .from("portfolios")

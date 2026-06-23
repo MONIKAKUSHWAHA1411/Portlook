@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut } from "lucide-react";
+import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut, LayoutGrid } from "lucide-react";
 import { TEMPLATES, DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
 import { SAMPLE_PORTFOLIO } from "@/lib/sampleData";
 
@@ -62,6 +63,12 @@ export default function HomePage() {
       {session?.user && (
         <div className="absolute top-5 right-5 z-20 flex items-center gap-3">
           <span className="text-xs text-zinc-500 hidden sm:block">{session.user.email}</span>
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-zinc-400 border border-white/8 bg-white/[0.02] hover:text-white hover:border-white/20 transition-colors"
+          >
+            <LayoutGrid size={12} /> My Portfolios
+          </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-zinc-400 border border-white/8 bg-white/[0.02] hover:text-white hover:border-white/20 transition-colors"
