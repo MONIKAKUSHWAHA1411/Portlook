@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Palette, Check, FilePlus2, LogOut, X, Share2, Copy, ExternalLink, Loader2 } from "lucide-react";
+import { Palette, Check, FilePlus2, LogOut, X, Share2, Copy, ExternalLink, Loader2, Shuffle } from "lucide-react";
 import { TEMPLATES, type TemplateId } from "@/lib/templates";
 import { TemplateThumbnail } from "./TemplateThumbnail";
 import type { PortfolioData } from "@/lib/types";
@@ -104,31 +104,47 @@ export function TemplateSwitcher({
             {/* Templates */}
             <div className="flex items-center justify-between px-1 pt-3 pb-2">
               <span className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase">Template</span>
-              <button onClick={() => setOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
-                <X size={14} />
-              </button>
+              <div className="flex items-center gap-2.5">
+                <button
+                  onClick={() => onChange(TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].id)}
+                  title="Surprise me"
+                  className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-white transition-colors"
+                >
+                  <Shuffle size={12} /> Shuffle
+                </button>
+                <button onClick={() => setOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
+                  <X size={14} />
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-1.5">
-              {TEMPLATES.map((t) => {
-                const sel = t.id === current;
-                return (
-                  <button
-                    key={t.id}
-                    onClick={() => onChange(t.id)}
-                    className={`flex items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors ${
-                      sel ? "bg-white/10" : "hover:bg-white/5"
-                    }`}
-                  >
-                    <TemplateThumbnail id={t.id} className="w-14 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-white leading-tight">{t.name}</p>
-                      <p className="text-[10px] text-zinc-500 truncate">{t.inspiredBy}</p>
-                    </div>
-                    {sel && <Check size={15} className="text-purple-400 shrink-0" />}
-                  </button>
-                );
-              })}
+            <div className="max-h-[46vh] overflow-y-auto pr-0.5">
+              {(["dark", "light"] as const).map((grp) => (
+                <div key={grp} className="mb-1">
+                  <p className="px-1 pb-1 pt-1 text-[10px] font-medium uppercase tracking-wide text-zinc-600">{grp}</p>
+                  <div className="grid grid-cols-1 gap-1.5">
+                    {TEMPLATES.filter((t) => t.theme === grp).map((t) => {
+                      const sel = t.id === current;
+                      return (
+                        <button
+                          key={t.id}
+                          onClick={() => onChange(t.id)}
+                          className={`flex items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors ${
+                            sel ? "bg-white/10" : "hover:bg-white/5"
+                          }`}
+                        >
+                          <TemplateThumbnail id={t.id} className="w-14 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-white leading-tight">{t.name}</p>
+                            <p className="text-[10px] text-zinc-500 truncate">{t.inspiredBy}</p>
+                          </div>
+                          {sel && <Check size={15} className="text-purple-400 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="mt-2 pt-2 border-t border-white/8 flex gap-1.5">

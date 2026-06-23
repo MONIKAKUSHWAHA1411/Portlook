@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut, LayoutGrid } from "lucide-react";
+import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut, LayoutGrid, Shuffle } from "lucide-react";
 import { TEMPLATES, DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
 import { SAMPLE_PORTFOLIO } from "@/lib/sampleData";
 import { TemplateThumbnail } from "@/components/templates/TemplateThumbnail";
@@ -171,33 +171,46 @@ export default function HomePage() {
                   {state === "selected" && (
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-5">
                       {/* Template picker */}
-                      <p className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase mb-3">Choose a style</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                        {TEMPLATES.map((t) => {
-                          const active = template === t.id;
-                          return (
-                            <button
-                              key={t.id}
-                              onClick={() => setTemplate(t.id)}
-                              title={t.blurb}
-                              className={`relative text-left rounded-xl p-3 border transition-all ${
-                                active
-                                  ? "border-purple-500/60 bg-purple-500/10"
-                                  : "border-white/8 bg-white/[0.02] hover:border-white/20"
-                              }`}
-                            >
-                              {active && (
-                                <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
-                                  <Check size={11} className="text-white" />
-                                </span>
-                              )}
-                              <TemplateThumbnail id={t.id} className="mb-2" />
-                              <p className="text-sm font-semibold text-white">{t.name}</p>
-                              <p className="text-[10px] text-zinc-500 leading-tight mt-0.5 line-clamp-1">{t.blurb}</p>
-                            </button>
-                          );
-                        })}
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase">Choose a style</p>
+                        <button
+                          onClick={() => setTemplate(TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].id)}
+                          className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-white transition-colors"
+                        >
+                          <Shuffle size={11} /> Surprise me
+                        </button>
                       </div>
+                      {(["dark", "light"] as const).map((grp) => (
+                        <div key={grp} className="mb-4 last:mb-0">
+                          <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-600">{grp}</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            {TEMPLATES.filter((t) => t.theme === grp).map((t) => {
+                              const active = template === t.id;
+                              return (
+                                <button
+                                  key={t.id}
+                                  onClick={() => setTemplate(t.id)}
+                                  title={t.blurb}
+                                  className={`relative text-left rounded-xl p-3 border transition-all ${
+                                    active
+                                      ? "border-purple-500/60 bg-purple-500/10"
+                                      : "border-white/8 bg-white/[0.02] hover:border-white/20"
+                                  }`}
+                                >
+                                  {active && (
+                                    <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
+                                      <Check size={11} className="text-white" />
+                                    </span>
+                                  )}
+                                  <TemplateThumbnail id={t.id} className="mb-2" />
+                                  <p className="text-sm font-semibold text-white">{t.name}</p>
+                                  <p className="text-[10px] text-zinc-500 leading-tight mt-0.5 line-clamp-1">{t.blurb}</p>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
 
                       <button
                         onClick={generate}
