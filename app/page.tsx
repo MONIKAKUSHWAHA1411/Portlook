@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, Check, LogOut, LayoutGrid, Shuffle } from "lucide-react";
-import { TEMPLATES, DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
+import { Upload, FileText, Sparkles, ArrowRight, CheckCircle2, AlertCircle, X, LogOut, LayoutGrid } from "lucide-react";
+import { DEFAULT_TEMPLATE, type TemplateId } from "@/lib/templates";
 import { SAMPLE_PORTFOLIO } from "@/lib/sampleData";
-import { TemplateThumbnail } from "@/components/templates/TemplateThumbnail";
+import { TemplateGrid } from "@/components/templates/TemplateGrid";
 
 type State = "idle" | "dragging" | "selected" | "parsing" | "error";
 
@@ -58,8 +58,10 @@ export default function HomePage() {
     router.push("/portfolio");
   };
 
+  const selected = state === "selected";
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
       {/* Signed-in user */}
       {session?.user && (
         <div className="absolute top-5 right-5 z-20 flex items-center gap-3">
@@ -86,9 +88,9 @@ export default function HomePage() {
         <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[radial-gradient(ellipse,rgba(34,211,238,0.05)_0%,transparent_70%)]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-lg">
+      <div className={`relative z-10 w-full transition-all duration-500 ${selected ? "max-w-5xl" : "max-w-lg"}`}>
         {/* Header */}
-        <motion.div className="text-center mb-10" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <motion.div className="text-center mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/20 mb-5">
             <Sparkles size={12} /> Powered by Claude AI
           </div>
@@ -96,151 +98,121 @@ export default function HomePage() {
             <span className="text-white">Your CV,</span><br />
             <span className="gradient-text">Reimagined.</span>
           </h1>
-          <p className="text-zinc-400 leading-relaxed">Upload your resume and get a stunning animated portfolio in seconds.</p>
+          <p className="text-zinc-400 leading-relaxed">{selected ? "Pick a style on the right, then generate." : "Upload your resume and get a stunning portfolio in seconds."}</p>
         </motion.div>
 
-        {/* Upload / Parsing area */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <AnimatePresence mode="wait">
-            {state === "parsing" ? (
-              <motion.div key="parsing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="glass rounded-2xl p-10 flex flex-col items-center gap-5">
-                <div className="relative w-16 h-16">
-                  <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-purple-500 border-r-purple-500 animate-spin" />
-                  <div className="absolute inset-2 rounded-full border-2 border-transparent border-b-cyan-400 border-l-cyan-400 animate-[spin_1.5s_linear_infinite_reverse]" />
-                  <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="text-purple-400" size={20} /></div>
-                </div>
-                <div className="text-center">
-                  <p className="text-white font-semibold">Generating your portfolio…</p>
-                  <p className="text-zinc-500 text-sm mt-1">Claude is reading your CV</p>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <div
-                  onDrop={onDrop}
-                  onDragOver={(e) => { e.preventDefault(); setState("dragging"); }}
-                  onDragLeave={() => state === "dragging" && setState("idle")}
-                  onClick={() => state !== "selected" && inputRef.current?.click()}
-                  className={`relative rounded-2xl border-2 border-dashed p-10 text-center cursor-pointer transition-all duration-200
-                    ${state === "dragging" ? "border-purple-400 bg-purple-500/5 scale-[1.01]"
-                    : state === "selected" ? "border-emerald-500/50 bg-emerald-500/5 cursor-default"
-                    : state === "error" ? "border-red-500/40 bg-red-500/5"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"}`}
-                >
-                  <input ref={inputRef} type="file" accept=".pdf,.doc,.docx" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} className="hidden" />
+        <div className={selected ? "grid gap-8 lg:grid-cols-[minmax(0,400px)_1fr] lg:items-start" : ""}>
+          {/* LEFT: upload + generate + sample */}
+          <div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <AnimatePresence mode="wait">
+                {state === "parsing" ? (
+                  <motion.div key="parsing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="glass rounded-2xl p-10 flex flex-col items-center gap-5">
+                    <div className="relative w-16 h-16">
+                      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-purple-500 border-r-purple-500 animate-spin" />
+                      <div className="absolute inset-2 rounded-full border-2 border-transparent border-b-cyan-400 border-l-cyan-400 animate-[spin_1.5s_linear_infinite_reverse]" />
+                      <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="text-purple-400" size={20} /></div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white font-semibold">Generating your portfolio…</p>
+                      <p className="text-zinc-500 text-sm mt-1">Claude is reading your CV</p>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <div
+                      onDrop={onDrop}
+                      onDragOver={(e) => { e.preventDefault(); setState("dragging"); }}
+                      onDragLeave={() => state === "dragging" && setState("idle")}
+                      onClick={() => state !== "selected" && inputRef.current?.click()}
+                      className={`relative rounded-2xl border-2 border-dashed p-10 text-center cursor-pointer transition-all duration-200
+                        ${state === "dragging" ? "border-purple-400 bg-purple-500/5 scale-[1.01]"
+                        : state === "selected" ? "border-emerald-500/50 bg-emerald-500/5 cursor-default"
+                        : state === "error" ? "border-red-500/40 bg-red-500/5"
+                        : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"}`}
+                    >
+                      <input ref={inputRef} type="file" accept=".pdf,.doc,.docx" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} className="hidden" />
 
-                  {state === "selected" && file ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                        <CheckCircle2 className="text-emerald-400" size={24} />
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold">{file.name}</p>
-                        <p className="text-zinc-500 text-sm">{(file.size / 1024).toFixed(0)} KB · Ready</p>
-                      </div>
-                      <button onClick={(e) => { e.stopPropagation(); reset(); }} className="text-zinc-600 hover:text-zinc-400 text-sm flex items-center gap-1 transition-colors">
-                        <X size={12} /> Remove
-                      </button>
-                    </div>
-                  ) : state === "error" ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <AlertCircle className="text-red-400" size={36} />
-                      <p className="text-red-400 text-sm">{error}</p>
-                      <button onClick={(e) => { e.stopPropagation(); reset(); inputRef.current?.click(); }} className="text-zinc-400 hover:text-white text-sm transition-colors">Try again</button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-4">
-                      <div className={`w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform ${state === "dragging" ? "scale-110" : ""}`}>
-                        <Upload className={state === "dragging" ? "text-purple-400" : "text-zinc-400"} size={24} />
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold">{state === "dragging" ? "Drop it here!" : "Drop your CV here"}</p>
-                        <p className="text-zinc-500 text-sm mt-1">or <span className="text-purple-400">browse files</span> · PDF or DOCX · Max 10 MB</p>
-                      </div>
-                      <div className="flex gap-4">
-                        {["PDF", "DOCX", "DOC"].map((e) => (
-                          <span key={e} className="flex items-center gap-1 text-xs text-zinc-600"><FileText size={11} />{e}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <AnimatePresence>
-                  {state === "selected" && (
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-5">
-                      {/* Template picker */}
-                      <div className="flex items-center justify-between mb-3">
-                        <p className="text-[11px] font-semibold tracking-widest text-zinc-500 uppercase">Choose a style</p>
-                        <button
-                          onClick={() => setTemplate(TEMPLATES[Math.floor(Math.random() * TEMPLATES.length)].id)}
-                          className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 hover:text-white transition-colors"
-                        >
-                          <Shuffle size={11} /> Surprise me
-                        </button>
-                      </div>
-                      {(["dark", "light"] as const).map((grp) => (
-                        <div key={grp} className="mb-4 last:mb-0">
-                          <p className="mb-1.5 text-[10px] font-medium uppercase tracking-wide text-zinc-600">{grp}</p>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                            {TEMPLATES.filter((t) => t.theme === grp).map((t) => {
-                              const active = template === t.id;
-                              return (
-                                <button
-                                  key={t.id}
-                                  onClick={() => setTemplate(t.id)}
-                                  title={t.blurb}
-                                  className={`relative text-left rounded-xl p-3 border transition-all ${
-                                    active
-                                      ? "border-purple-500/60 bg-purple-500/10"
-                                      : "border-white/8 bg-white/[0.02] hover:border-white/20"
-                                  }`}
-                                >
-                                  {active && (
-                                    <span className="absolute top-2 right-2 w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
-                                      <Check size={11} className="text-white" />
-                                    </span>
-                                  )}
-                                  <TemplateThumbnail id={t.id} className="mb-2" />
-                                  <p className="text-sm font-semibold text-white">{t.name}</p>
-                                  <p className="text-[10px] text-zinc-500 leading-tight mt-0.5 line-clamp-1">{t.blurb}</p>
-                                </button>
-                              );
-                            })}
+                      {state === "selected" && file ? (
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                            <CheckCircle2 className="text-emerald-400" size={24} />
+                          </div>
+                          <div>
+                            <p className="text-white font-semibold">{file.name}</p>
+                            <p className="text-zinc-500 text-sm">{(file.size / 1024).toFixed(0)} KB · Ready</p>
+                          </div>
+                          <button onClick={(e) => { e.stopPropagation(); reset(); }} className="text-zinc-600 hover:text-zinc-400 text-sm flex items-center gap-1 transition-colors">
+                            <X size={12} /> Remove
+                          </button>
+                        </div>
+                      ) : state === "error" ? (
+                        <div className="flex flex-col items-center gap-3">
+                          <AlertCircle className="text-red-400" size={36} />
+                          <p className="text-red-400 text-sm">{error}</p>
+                          <button onClick={(e) => { e.stopPropagation(); reset(); inputRef.current?.click(); }} className="text-zinc-400 hover:text-white text-sm transition-colors">Try again</button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-4">
+                          <div className={`w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform ${state === "dragging" ? "scale-110" : ""}`}>
+                            <Upload className={state === "dragging" ? "text-purple-400" : "text-zinc-400"} size={24} />
+                          </div>
+                          <div>
+                            <p className="text-white font-semibold">{state === "dragging" ? "Drop it here!" : "Drop your CV here"}</p>
+                            <p className="text-zinc-500 text-sm mt-1">or <span className="text-purple-400">browse files</span> · PDF or DOCX · Max 10 MB</p>
+                          </div>
+                          <div className="flex gap-4">
+                            {["PDF", "DOCX", "DOC"].map((e) => (
+                              <span key={e} className="flex items-center gap-1 text-xs text-zinc-600"><FileText size={11} />{e}</span>
+                            ))}
                           </div>
                         </div>
-                      ))}
+                      )}
+                    </div>
 
-                      <button
-                        onClick={generate}
-                        className="mt-4 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all shadow-xl shadow-purple-500/20">
-                        <Sparkles size={18} /> Generate My Portfolio <ArrowRight size={18} />
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                    <AnimatePresence>
+                      {state === "selected" && (
+                        <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                          onClick={generate}
+                          className="mt-4 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all shadow-xl shadow-purple-500/20">
+                          <Sparkles size={18} /> Generate My Portfolio <ArrowRight size={18} />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Sample-data preview (no upload, no API) */}
+            {state !== "parsing" && (
+              <div className="text-center mt-5">
+                <button onClick={previewSample} className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
+                  or <span className="text-purple-400 underline underline-offset-2">preview with sample data</span>
+                  <span className="text-zinc-600"> — no upload, no API</span>
+                </button>
+              </div>
             )}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* Sample-data preview (no upload, no API) */}
-        {state !== "parsing" && (
-          <div className="text-center mt-5">
-            <button onClick={previewSample} className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">
-              or <span className="text-purple-400 underline underline-offset-2">preview with sample data</span>
-              <span className="text-zinc-600"> — no upload, no API</span>
-            </button>
           </div>
-        )}
 
-        {/* Feature pills */}
-        <motion.div className="flex flex-wrap justify-center gap-2 mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
-          {["✨ Animated sections", "🎨 Dark AI aesthetic", "📱 Mobile responsive", "⚡ Instant generation", "🔒 Data stays local"].map((p) => (
-            <span key={p} className="px-3 py-1.5 rounded-full text-xs text-zinc-500 border border-white/6 bg-white/[0.02]">{p}</span>
-          ))}
-        </motion.div>
+          {/* RIGHT: all templates, visible at once */}
+          {selected && (
+            <motion.div initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Choose a style</p>
+              <TemplateGrid current={template} onChange={setTemplate} columns={4} showDesc showShuffle />
+            </motion.div>
+          )}
+        </div>
+
+        {/* Feature pills (hidden once a file is selected) */}
+        {!selected && state !== "parsing" && (
+          <motion.div className="flex flex-wrap justify-center gap-2 mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
+            {["✨ 12 designer styles", "🔗 Shareable links", "📱 Mobile responsive", "⚡ Instant generation", "🔒 Data stays private"].map((p) => (
+              <span key={p} className="px-3 py-1.5 rounded-full text-xs text-zinc-500 border border-white/6 bg-white/[0.02]">{p}</span>
+            ))}
+          </motion.div>
+        )}
       </div>
     </main>
   );

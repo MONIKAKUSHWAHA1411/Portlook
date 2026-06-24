@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { PortfolioData } from "@/lib/types";
 import { getTemplate, type TemplateId } from "@/lib/templates";
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer";
-import { TemplateSwitcher } from "@/components/templates/TemplateSwitcher";
+import { StudioPanel } from "@/components/templates/StudioPanel";
 
 function sanitize(raw: Record<string, unknown>): PortfolioData {
   const skills = (raw.skills as Record<string, string[]> | null) ?? {};
@@ -63,7 +63,6 @@ export default function PortfolioPage() {
   const choose = (id: TemplateId) => {
     setTemplate(id);
     sessionStorage.setItem("portfolioTemplate", id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (loading) {
@@ -80,9 +79,13 @@ export default function PortfolioPage() {
   if (!data) return null;
 
   return (
-    <main className="min-h-screen">
-      <TemplateRenderer template={template} data={data} />
-      <TemplateSwitcher current={template} onChange={choose} data={data} />
-    </main>
+    <div className="flex h-screen overflow-hidden">
+      {/* transform creates a containing block so templates' fixed/sticky
+          elements scope to this pane instead of the whole viewport */}
+      <main className="relative flex-1 overflow-y-auto" style={{ transform: "translateZ(0)" }}>
+        <TemplateRenderer template={template} data={data} />
+      </main>
+      <StudioPanel current={template} onChange={choose} data={data} />
+    </div>
   );
 }
