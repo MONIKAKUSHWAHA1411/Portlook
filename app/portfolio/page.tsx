@@ -49,12 +49,12 @@ export default function PortfolioPage() {
 
   useEffect(() => {
     const raw = sessionStorage.getItem("portfolioData");
-    if (!raw) { router.replace("/"); return; }
+    if (!raw) { router.replace("/create"); return; }
     try {
       setData(sanitize(JSON.parse(raw)));
       setTemplate(getTemplate(sessionStorage.getItem("portfolioTemplate")));
     } catch {
-      router.replace("/");
+      router.replace("/create");
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
+import { isSupabaseConfigured, getSupabase } from "@/lib/supabase";
 
 const googleConfigured = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
 
@@ -30,4 +31,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ]
       : []),
   ],
+  events: {
+    async signIn({ user, account }) {
+      if (!user.email || !isSupabaseConfigured()) return;
+      try {
+        await getSupabase().rpc("upsert_user", {
+          p_email: user.email,
+          p_name: user.name ?? user.email,
+          p_provider: account?.provider ?? "guest",
+        });
+      } catch {
+        // Non-fatal — don't block sign-in if tracking fails
+      }
+    },
+  },
 });
