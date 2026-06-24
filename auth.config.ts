@@ -19,7 +19,8 @@ export const authConfig = {
     // Gate every matched route. Returning false sends the visitor to /login.
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl;
-      if (pathname.startsWith("/login")) return true; // never gate the gate
+      // Public: the marketing landing page and the sign-in page.
+      if (pathname === "/" || pathname.startsWith("/login")) return true;
       return !!auth?.user;
     },
   },

@@ -22,13 +22,13 @@ export default function LoginPage() {
 
   const google = () => {
     setLoading("google");
-    signIn("google", { callbackUrl: "/" });
+    signIn("google", { callbackUrl: "/create" });
   };
 
   const guest = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading("guest");
-    signIn("guest", { name, email, callbackUrl: "/" });
+    signIn("guest", { name, email, callbackUrl: "/create" });
   };
 
   return (

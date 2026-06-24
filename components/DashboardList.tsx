@@ -57,7 +57,7 @@ export function DashboardList({ rows, email, configured }: { rows: DashRow[]; em
             <p className="text-sm text-zinc-500 mt-0.5">{email}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-300 hover:text-white hover:border-white/20 transition-colors">
+            <Link href="/create" className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-300 hover:text-white hover:border-white/20 transition-colors">
               <FilePlus2 size={14} /> New CV
             </Link>
             <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-400 hover:text-white hover:border-white/20 transition-colors">
@@ -74,7 +74,7 @@ export function DashboardList({ rows, email, configured }: { rows: DashRow[]; em
             title="No published portfolios yet"
             sub="Generate a portfolio, then hit “Publish & copy link” to get a shareable URL."
             action={
-              <Link href="/" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity">
+              <Link href="/create" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity">
                 <FilePlus2 size={15} /> Create one
               </Link>
             }
