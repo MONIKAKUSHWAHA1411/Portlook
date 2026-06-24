@@ -73,7 +73,7 @@ export default function HomePage() {
             <LayoutGrid size={12} /> My Portfolios
           </Link>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ redirectTo: "/" })}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs text-zinc-400 border border-white/8 bg-white/[0.02] hover:text-white hover:border-white/20 transition-colors"
           >
             <LogOut size={12} /> Sign out
