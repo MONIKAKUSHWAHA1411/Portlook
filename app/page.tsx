@@ -73,6 +73,11 @@ export default function LandingPage() {
               <Link href="/create" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-purple-500 px-7 py-3.5 text-base font-bold shadow-xl shadow-purple-500/25 hover:opacity-90 transition-opacity">
                 Create your portfolio <ArrowRight size={18} />
               </Link>
+            ) : hasGoogle ? (
+              <button onClick={google} disabled={loading !== null}
+                className="inline-flex items-center gap-3 rounded-full bg-white px-7 py-3.5 text-base font-bold text-zinc-900 shadow-xl shadow-white/10 hover:bg-zinc-100 transition-colors disabled:opacity-60">
+                {loading === "google" ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />} Continue with Google
+              </button>
             ) : (
               <a href="#start" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-purple-500 px-7 py-3.5 text-base font-bold shadow-xl shadow-purple-500/25 hover:opacity-90 transition-opacity">
                 Create yours free <ArrowRight size={18} />
@@ -83,16 +88,6 @@ export default function LandingPage() {
             </a>
           </div>
           <p className="mt-5 text-xs text-zinc-600">Free forever · No credit card · Your data stays private</p>
-        </motion.div>
-
-        {/* floating thumbnail montage */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.6 }}
-          className="relative mx-auto mt-16 grid max-w-4xl grid-cols-3 gap-3 sm:grid-cols-5">
-          {["halo", "ink", "quill", "edge", "analyst"].map((id, i) => (
-            <div key={id} className={i % 2 ? "translate-y-4" : ""}>
-              <TemplateThumbnail id={id as never} />
-            </div>
-          ))}
         </motion.div>
       </section>
 
@@ -172,7 +167,7 @@ export default function LandingPage() {
               <div className="flex justify-center py-6"><Loader2 size={20} className="animate-spin text-zinc-500" /></div>
             ) : authed ? (
               <Link href="/create" className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 py-3.5 font-bold hover:opacity-90 transition-opacity">
-                Go to the generator <ArrowRight size={18} />
+                Create your portfolio <ArrowRight size={18} />
               </Link>
             ) : (
               <div className="flex flex-col gap-4">

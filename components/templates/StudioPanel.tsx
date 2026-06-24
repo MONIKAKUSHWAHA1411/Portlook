@@ -99,7 +99,7 @@ export function StudioPanel({
         <button onClick={() => router.push("/create")} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors">
           <FilePlus2 size={13} /> New CV
         </button>
-        <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors">
+        <button onClick={() => signOut({ callbackUrl: "/" })} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs text-zinc-300 hover:bg-white/5 hover:text-white transition-colors">
           <LogOut size={13} /> Sign out
         </button>
       </div>

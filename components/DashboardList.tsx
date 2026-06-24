@@ -67,7 +67,7 @@ export function DashboardList({ rows, email, configured }: { rows: DashRow[]; em
             <Link href="/create" className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-300 hover:text-white hover:border-white/20 transition-colors">
               <FilePlus2 size={14} /> New CV
             </Link>
-            <button onClick={() => signOut({ callbackUrl: "/login" })} className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-400 hover:text-white hover:border-white/20 transition-colors">
+            <button onClick={() => signOut({ callbackUrl: "/" })} className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-zinc-400 hover:text-white hover:border-white/20 transition-colors">
               <LogOut size={14} /> Sign out
             </button>
           </div>
